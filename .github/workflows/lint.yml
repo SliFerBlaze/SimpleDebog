@@ -15,7 +15,7 @@ jobs:
 
       - name: 🧰 Install dependencies
         run: |
-          sudo dnf install -y \
+          sudo apt install -y \
             clang-tools-extra \
             clang \
             cmake \

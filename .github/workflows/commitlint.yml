@@ -2,27 +2,34 @@ name: 🚨 Commit Lint
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  pull-requests: read
 
 jobs:
   commitlint:
     runs-on: ubuntu-latest
-
     steps:
-      - name: ⬇️ Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: ⎔ Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      - name: 📦 Install commitlint
+      - name: Install Commitlint
         run: |
-          npm install --save-dev @commitlint/{config-conventional,cli}
+          npm install commitlint @commitlint/config-conventional
+
+      - name: Create temporary config
+        run: |
           echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
 
-      - name: 🚨 Lint PR commit messages
-        uses: wagoid/commitlint-github-action@v5
-        with:
-          configFile: commitlint.config.js
+      - name: Run commitlint on PR commits
+        run: |
+          git fetch origin main --depth=1
+          npx commitlint --from=origin/main
+
+      - name: Clean up
+        run: rm commitlint.config.js
