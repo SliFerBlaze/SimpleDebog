@@ -1,20 +1,19 @@
 #pragma once
 
-#include <sys/ptrace.h>
+#include "Decoder/DecoderFactory.hpp"
+#include "syscall.h"
+#include <fstream>
+#include <iomanip>
+#include <optional>
+#include <sstream>
 #include <string>
-#include <vector>
+#include <sys/ptrace.h>
+#include <sys/user.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <sys/user.h>
-#include <optional>
-#include "syscall.h"
-#include "Decoder/DecoderFactory.hpp"
-#include <fstream>
-#include <sstream>
-#include <iomanip>
+#include <vector>
 
-struct SyscallData
-{
+struct SyscallData {
     size_t id; // Store syscall ID
     std::string name;
     std::vector<DecodedValue> args;
@@ -24,7 +23,7 @@ struct SyscallData
 
 class Trace
 {
-private:
+  private:
     pid_t _pid;
     char **_argv;
     char **_env;
@@ -36,7 +35,7 @@ private:
     uintptr_t getSharedLibBase(const std::string &libName) const;
     uintptr_t resolveAddress(uintptr_t addr, const std::string &lib);
 
-public:
+  public:
     explicit Trace(char **argv, char **env);
     void run(void);
     bool next(void);

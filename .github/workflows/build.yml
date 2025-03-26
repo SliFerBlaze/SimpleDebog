@@ -1,0 +1,41 @@
+name: 🧪 Build & Compile
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: 🧰 Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🧰 Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo dnf install -y \
+            cmake gcc-c++ \
+            qt6-qtbase-devel \
+            capstone-devel \
+            libunwind-devel \
+            binutils-devel
+
+      - name: 🍎 Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake qt@6 capstone libunwind binutils
+
+      - name: 🛠️ Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: 🧱 Build
+        run: cmake --build build --parallel

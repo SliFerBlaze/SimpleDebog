@@ -1,0 +1,34 @@
+name: 🧹 Linter & Formatter
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint:
+    name: 🔎 Run clang-format & clang-tidy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🧰 Install dependencies
+        run: |
+          sudo dnf install -y \
+            clang-tools-extra \
+            clang \
+            cmake \
+            qt6-qtbase-devel \
+            capstone-devel \
+            libunwind-devel \
+            binutils-devel
+
+      - name: 🧽 Check formatting (clang-format)
+        run: |
+          find . -regex '.*\.\(cpp\|hpp\|h\|hh\)' -exec clang-format --dry-run --Werror {} +
+      - name: 🕵️ Run clang-tidy
+        run: |
+          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          ln -sfn build/compile_commands.json .
+          clang-tidy src/*.cpp -- -Iinclude

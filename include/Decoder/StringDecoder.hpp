@@ -1,13 +1,13 @@
 #pragma once
 #include "Decoder.hpp"
 #include "DecoderFactory.hpp"
-#include <sys/ptrace.h>
 #include <cstring>
 #include <errno.h>
+#include <sys/ptrace.h>
 
 class StringDecoder : public Decoder
 {
-public:
+  public:
     DecodedValue decode(pid_t pid, uintptr_t value) const override
     {
         if (value == 0)
@@ -17,8 +17,7 @@ public:
         size_t i = 0;
         long word;
 
-        while (i < sizeof(buffer) - sizeof(long))
-        {
+        while (i < sizeof(buffer) - sizeof(long)) {
             errno = 0;
             word = ptrace(PTRACE_PEEKDATA, pid, value + i, nullptr);
             if (errno != 0)
@@ -33,11 +32,9 @@ public:
         return std::string(buffer);
     }
 
-private:
-    static inline const bool registered = []
-    {
-        DecoderFactory::getInstance().registerDecoder(STRING, []
-                                                      { return std::make_unique<StringDecoder>(); });
+  private:
+    static inline const bool registered = [] {
+        DecoderFactory::getInstance().registerDecoder(STRING, [] { return std::make_unique<StringDecoder>(); });
         return true;
     }();
 };

@@ -120,8 +120,7 @@
 #define STRUCT_SCHED_ATTR_P (127)
 #define UNION__ATTR_P (128)
 
-typedef struct syscall_s
-{
+typedef struct syscall_s {
     int id;
     std::string name;
     int nb_param;
