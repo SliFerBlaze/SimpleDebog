@@ -4,6 +4,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: 🔎 Run clang-format & clang-tidy
@@ -15,20 +18,21 @@ jobs:
 
       - name: 🧰 Install dependencies
         run: |
+          sudo apt update
           sudo apt install -y \
-            clang-tools-extra \
-            clang \
+            clang clang-tools \
             cmake \
-            qt6-qtbase-devel \
-            capstone-devel \
-            libunwind-devel \
-            binutils-devel
+            qt6-base-dev \
+            libcapstone-dev \
+            libunwind-dev \
+            binutils-dev
 
       - name: 🧽 Check formatting (clang-format)
         run: |
           find . -regex '.*\.\(cpp\|hpp\|h\|hh\)' -exec clang-format --dry-run --Werror {} +
+
       - name: 🕵️ Run clang-tidy
         run: |
           cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           ln -sfn build/compile_commands.json .
-          clang-tidy src/*.cpp -- -Iinclude
+          find src -name '*.cpp' | xargs clang-tidy -- -Iinclude

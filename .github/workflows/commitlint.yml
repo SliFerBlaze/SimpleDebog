@@ -4,32 +4,32 @@ on:
   pull_request:
 
 permissions:
+  contents: read
   pull-requests: read
 
 jobs:
   commitlint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: 🧰 Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      - name: Install Commitlint
+      - name: 📦 Install Commitlint
         run: |
-          npm install commitlint @commitlint/config-conventional
+          npm install --save-dev @commitlint/cli @commitlint/config-conventional
 
-      - name: Create temporary config
+      - name: 📝 Create commitlint config
         run: |
           echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
 
-      - name: Run commitlint on PR commits
+      - name: 🔍 Lint PR commits
         run: |
-          git fetch origin main --depth=1
-          npx commitlint --from=origin/main
+          npx commitlint --from=$GITHUB_BASE_REF --to=HEAD
 
-      - name: Clean up
+      - name: 🧹 Clean up
         run: rm commitlint.config.js
