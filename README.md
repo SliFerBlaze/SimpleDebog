@@ -28,12 +28,16 @@ sudo dnf install -y \
     binutils-devel
 ```
 
-### **🍎 macOS (Homebrew)**
+### **🍎 macOS (not supported yet)**
+
+> ⚠️ macOS builds are **not currently supported** in CI.  
+> You're welcome to try building manually, but compatibility is **experimental and untested**.
+
 ```sh
-brew install cmake qt@6 capstone libunwind binutils
+brew install cmake qt@6 capstone binutils
 ```
 
-> ℹ️ On macOS with Homebrew, make sure to add Qt to your `CMAKE_PREFIX_PATH` if needed:
+> ℹ️ If you try building on macOS, you may need to add Qt to your `CMAKE_PREFIX_PATH`:
 > ```sh
 > export CMAKE_PREFIX_PATH=$(brew --prefix qt@6)
 > ```
