@@ -1,10 +1,10 @@
 #pragma once
 #include "../PlatformDefines.hpp"
+#include "Decoder.hpp"
+#include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
-#include <functional>
-#include "Decoder.hpp"
-#include <iostream>
 
 #ifndef SYS_futex
 #define SYS_futex 202
@@ -12,7 +12,7 @@
 
 class DecoderFactory
 {
-public:
+  public:
     using Creator = std::function<std::unique_ptr<Decoder>()>;
 
     static DecoderFactory &getInstance()
@@ -30,14 +30,13 @@ public:
     std::unique_ptr<Decoder> createDecoder(int type) const
     {
         auto it = decoders.find(type);
-        if (it != decoders.end())
-        {
+        if (it != decoders.end()) {
             return it->second();
         }
         return nullptr;
     }
 
-private:
+  private:
     std::map<int, Creator> decoders;
 
     DecoderFactory() = default;

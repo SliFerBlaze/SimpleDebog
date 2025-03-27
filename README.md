@@ -28,12 +28,16 @@ sudo dnf install -y \
     binutils-devel
 ```
 
-### **🍎 macOS (Homebrew)**
+### **🍎 macOS (not supported yet)**
+
+> ⚠️ macOS builds are **not currently supported** in CI.  
+> You're welcome to try building manually, but compatibility is **experimental and untested**.
+
 ```sh
-brew install cmake qt@6 capstone libunwind binutils
+brew install cmake qt@6 capstone binutils
 ```
 
-> ℹ️ On macOS with Homebrew, make sure to add Qt to your `CMAKE_PREFIX_PATH` if needed:
+> ℹ️ If you try building on macOS, you may need to add Qt to your `CMAKE_PREFIX_PATH`:
 > ```sh
 > export CMAKE_PREFIX_PATH=$(brew --prefix qt@6)
 > ```
@@ -83,10 +87,84 @@ This ensures that **SliFerBlaze and ArthurSpiller** retain the right to relicens
 
 Don't forget to add your name to [CONTRIBUTORS.md](./CONTRIBUTORS.md) if you'd like public credit!
 
-## **💡 Notes:**
+## ✅ Commit Convention
 
-- This project **does not support Windows**.
-- Qt6 provides a modern and flexible GUI.
-- It can **debug multiple binary formats**, not just ELF.
-- If you run into missing libraries, check your package manager (`apt`, `dnf`, `brew`).
+We use [Commitizen](https://github.com/commitizen/cz-cli) for consistent commit messages.
 
+> **Commit using:**  
+> `git cz`
+
+> ⚠️ Even though this is a C++ project, Commitizen (a Node.js tool) helps us automate changelogs and keep commits clean.
+
+To install it:
+
+```sh
+npm install -g commitizen
+```
+
+---
+
+## 🧼 Code Style & Formatting
+
+### 🔧 Tools Used
+
+- **`clang-format`** — for automatic formatting
+- **`clang-tidy`** — for static analysis and code quality
+
+✅ A `.clang-format` and optional `.clang-tidy` config are included  
+✅ Formatting and linting are run automatically in CI  
+✅ You can format locally with:
+
+```sh
+clang-format -i $(find . -regex '.*\.\(cpp\|c\|h\|hpp\|hh\)')
+```
+
+---
+
+### 💻 Editor Integration
+
+#### **🧠 VSCode**
+
+1. Install the **Clang-Format** extension by _xaver_
+2. Add this to your `settings.json`:
+
+```json
+"[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": true
+},
+"[c]": {
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": true
+}
+```
+
+#### **📜 Emacs**
+
+1. Install `clang-format` via your package manager
+2. Add this to your `.emacs` or `init.el`:
+
+```elisp
+(require 'clang-format)
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'clang-format-buffer nil 'local)))
+(add-hook 'c-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'clang-format-buffer nil 'local)))
+```
+
+To format manually:
+
+```elisp
+(global-set-key [C-M-tab] 'clang-format-region)
+```
+
+---
+
+## 💡 Notes
+
+- This project **does not support Windows**
+- Built with **Qt6** for a modern, cross-platform GUI
+- Capable of debugging **multiple binary formats**, not just ELF
+- If you’re missing libraries, check your system’s package manager (`apt`, `dnf`, `brew`)

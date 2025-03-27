@@ -1,0 +1,37 @@
+name: 🚨 Commit Lint
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # necessary to access full git history
+
+      - name: 🧰 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: 📦 Install Commitlint
+        run: |
+          npm install --save-dev @commitlint/cli @commitlint/config-conventional
+
+      - name: 📝 Create commitlint config
+        run: |
+          echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
+
+      - name: 🔍 Lint PR commits
+        run: |
+          npx commitlint --from=${{ github.event.pull_request.base.sha }} --to=HEAD
+
+      - name: 🧹 Clean up
+        run: rm commitlint.config.js
