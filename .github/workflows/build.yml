@@ -13,10 +13,12 @@ permissions:
 jobs:
   build:
     name: 🧰 Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    # Remove macOS from matrix to disable its build
+    # runs-on: ${{ matrix.os }}
+    # strategy:
+    #   matrix:
+    #     os: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest  # Only build on Ubuntu for now
 
     steps:
       - name: 📥 Checkout repository
@@ -33,7 +35,7 @@ jobs:
             libunwind-dev \
             binutils-dev
 
-      # DISABLE macOS build for now
+      # macOS build is disabled for now
       # - name: 🍎 Install dependencies (macOS)
       #   if: runner.os == 'macOS'
       #   run: |
