@@ -1,0 +1,21 @@
+name: 🪞 Mirror to Epitech Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Mirror push to Epitech repo
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote add mirror https://x-access-token:${{ secrets.MIRROR_TOKEN }}@github.com/EpitechPromo2027/G-EIP-600-MLH-6-1-eip-evan.candan.git
+          git push mirror main --force
