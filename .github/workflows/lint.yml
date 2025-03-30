@@ -29,7 +29,7 @@ jobs:
 
       - name: 🧽 Check formatting (clang-format)
         run: |
-          FILES=$(find include src -type f \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
+          FILES=$(find src -type f \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) \
             -not -path './build/*' \
             -not -path './SimpleDebog_autogen/*')
 
@@ -44,12 +44,12 @@ jobs:
           cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           ln -sfn build/compile_commands.json .
 
-          FILES=$(find include src -type f -name '*.cpp' \
+          FILES=$(find src -type f -name '*.cpp' \
             -not -path './build/*' \
             -not -path './SimpleDebog_autogen/*')
 
           if [ -z "$FILES" ]; then
             echo "⚠️ No source files found for clang-tidy."
           else
-            echo "$FILES" | xargs clang-tidy -- -Iinclude || echo "⚠️ clang-tidy returned warnings"
+            echo "$FILES" | xargs clang-tidy -- -Isrc || echo "⚠️ clang-tidy returned warnings"
           fi
