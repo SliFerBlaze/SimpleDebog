@@ -15,7 +15,8 @@
 /*
 This interface is designed to be implemented by a low-level debugger class.
 It provides methods for attaching to a process, detaching from it, and stepping through its execution.
-The interface is abstract, meaning it cannot be instantiated directly and must be implemented by a derived class.
+The interface is implementing the RAII pattern, which means that it will automatically manage the call to detach() when the last copy of the object is destroyed.
+This includes detaching from the process when the object is destroyed.
 */
 class ILowLevelDebugger {
     public:
