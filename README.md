@@ -83,7 +83,7 @@ This project is licensed under the [Apache License 2.0](./LICENSE).
 We welcome contributions from the community!
 
 By submitting code, you agree to the terms of our [Contributor License Agreement (CLA)](./CLA.md).  
-This ensures that **SliFerBlaze and ArthurSpiller** retain the right to relicense and maintain the project.
+This ensures that **SliFerBlaze, ArthurSpiller and guigui0246** retain the right to relicense and maintain the project.
 
 Don't forget to add your name to [CONTRIBUTORS.md](./CONTRIBUTORS.md) if you'd like public credit!
 
