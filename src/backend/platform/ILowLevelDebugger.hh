@@ -140,7 +140,7 @@ class ILowLevelDebugger {
         Method to read memory from the target process and cast it to a specific type.
         WARNING: This method is not safe and should be used with caution.
         @param addr The address in the target process's memory to read from.
-        @return A vector of bytes read from the target process's memory.
+        @return An object read from the target process's memory.
         */
         template<typename T>
         T readMemoryWithCast(std::uintptr_t addr) const;
@@ -158,7 +158,7 @@ class ILowLevelDebugger {
         Method to write memory to the target process from a cast of a specific type.
         WARNING: This method is not safe and should be used with caution.
         @param addr The address in the target process's memory to write to.
-        @param data A vector of bytes to write to the target process's memory.
+        @param data An object to write to the target process's memory.
         @return A boolean indicating success or failure of the write operation.
         */
         template <typename T>

@@ -1,5 +1,5 @@
 #include "ILowLevelDebugger.hh"
-
+#include <cstring>
 template<typename T>
 T ILowLevelDebugger::readMemoryWithCast(std::uintptr_t addr) const {
     std::vector<std::uint8_t> data = readMemory(addr, sizeof(T));
