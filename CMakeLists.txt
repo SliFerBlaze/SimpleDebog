@@ -1,17 +1,29 @@
 cmake_minimum_required(VERSION 3.20)
 project(SimpleDebog LANGUAGES CXX)
 
+# CMake Configuration
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# CMake Options
+include(FetchContent)
+
 # Enable Qt features
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
+# set(CMAKE_AUTOMOC ON)
+# set(CMAKE_AUTOUIC ON)
+# set(CMAKE_AUTORCC ON)
 
 # Find Qt6
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+# find_package(Qt6 REQUIRED COMPONENTS Widgets)
+
+# Find Logger
+FetchContent_Declare(
+    Logger
+    GIT_REPOSITORY https://github.com/guigui0246/MyCppLoggerCopy.git
+    GIT_TAG        main
+)
+FetchContent_MakeAvailable(Logger)
 
 # Enable strict compiler flags
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -28,7 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
         -g
     )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options(/W4 /WX /Zi /permissive- /sdl /analyze /wd4100 /wd4201)
+    add_compile_options(/W4 /WX /Zi /permissive- /sdl /analyze /wd4100 /wd4201 /wd4505 /wd4251)
 endif()
 
 # ========== Sources ==========
@@ -59,7 +71,6 @@ set(FRONTEND
 
 # shared/
 set(SHARED_UTILS
-    src/shared/utils/Logger.cpp
 )
 
 # main entry point
@@ -82,4 +93,14 @@ add_executable(SimpleDebog
 target_include_directories(SimpleDebog PRIVATE src/)
 
 # Link Qt
-target_link_libraries(SimpleDebog PRIVATE Qt6::Widgets)
+# target_link_libraries(SimpleDebog PRIVATE Qt6::Widgets)
+
+# Link Logger
+target_link_libraries(SimpleDebog PRIVATE Logger)
+# get_target_property(LOGGER_DLL_PATH Logger LIBRARY_OUTPUT_DIRECTORY)
+# message(STATUS "Logger DLL Path: ${LOGGER_DLL_PATH}")
+# message(STATUS "Logger DLL Path: $<BUILD_INTERFACE:${LOGGER_DLL_PATH}>")
+# set_target_properties(SimpleDebog PROPERTIES
+#     INSTALL_RPATH "$<BUILD_INTERFACE:${LOGGER_DLL_PATH}>"
+#     BUILD_RPATH "$<BUILD_INTERFACE:${LOGGER_DLL_PATH}>"
+# )
