@@ -58,7 +58,6 @@ ILowLevelDebugger::ProcessInfo::Counter &ILowLevelDebugger::ProcessInfo::Counter
     return *this;
 };
 
-
 ILowLevelDebugger::ProcessInfo::Counter ILowLevelDebugger::ProcessInfo::Counter::operator++(int)
 {
     ILowLevelDebugger::ProcessInfo::Counter temp = *this;
