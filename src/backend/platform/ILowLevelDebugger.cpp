@@ -52,11 +52,11 @@ void ILowLevelDebugger::attach(pid_t pid)
     _processes[pid] = 1;
 };
 
-ILowLevelDebugger::ProcessInfo::Counter& ILowLevelDebugger::ProcessInfo::Counter::operator++()
+ILowLevelDebugger::ProcessInfo::Counter &ILowLevelDebugger::ProcessInfo::Counter::operator++()
 {
     ++_value;
     return *this;
-}
+};
 
 
 ILowLevelDebugger::ProcessInfo::Counter ILowLevelDebugger::ProcessInfo::Counter::operator++(int)
@@ -64,19 +64,19 @@ ILowLevelDebugger::ProcessInfo::Counter ILowLevelDebugger::ProcessInfo::Counter:
     ILowLevelDebugger::ProcessInfo::Counter temp = *this;
     ++_value;
     return temp;
-}
+};
 
 void ILowLevelDebugger::ProcessInfo::Counter::increment()
 {
     ++_value;
-}
+};
 
 unsigned int ILowLevelDebugger::ProcessInfo::Counter::value() const
 {
     return _value;
-}
+};
 
 ILowLevelDebugger::Context ILowLevelDebugger::Context::empty()
 {
     return ILowLevelDebugger::Context{};
-}
+};

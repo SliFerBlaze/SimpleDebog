@@ -8,7 +8,7 @@ T ILowLevelDebugger::readMemoryWithCast(std::uintptr_t addr) const
     T castedData;
     std::memcpy(&castedData, data.data(), sizeof(T));
     return castedData;
-}
+};
 
 template <typename T>
 bool ILowLevelDebugger::writeMemory(std::uintptr_t addr, const T &data)
@@ -16,4 +16,4 @@ bool ILowLevelDebugger::writeMemory(std::uintptr_t addr, const T &data)
     std::vector<std::uint8_t> byteData(sizeof(T));
     std::memcpy(byteData.data(), &data, sizeof(T));
     return writeMemory(addr, byteData);
-}
+};
