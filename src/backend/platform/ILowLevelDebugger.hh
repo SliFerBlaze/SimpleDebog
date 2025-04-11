@@ -81,10 +81,14 @@ class ILowLevelDebugger {
     };
 
     // StepResult subclasses to represent success case
-    struct StepSuccess : StepResult {};
+    struct StepSuccess : StepResult {
+        bool StepResult::success = true;
+    };
 
     // StepResult subclasses to represent failure case
     struct StepFailure : StepResult {
+        bool StepResult::success = false;
+
         // Signal that caused the failure (if applicable)
         // Defaults to `0`
         unsigned int signal = 0;
