@@ -2,6 +2,7 @@
 
 BUILD_DIR="build"
 EXECUTABLE="SimpleDebog"
+TEST_EXECUTABLE="SimpleDebogTests"
 
 build_all() {
     rm -rf "$BUILD_DIR" && mkdir "$BUILD_DIR" && touch "$BUILD_DIR/.gitkeep" && cd "$BUILD_DIR"
@@ -23,13 +24,22 @@ clean_build() {
     mkdir "$BUILD_DIR" && touch "$BUILD_DIR/.gitkeep"
 }
 
+run_tests() {
+    cd "$BUILD_DIR" || { echo "No build directory found. Run './build.sh build' first."; exit 1; }
+    ctest --output-on-failure || {
+        echo "Tests failed 💥"
+        exit 1
+    }
+    cd ..
+}
 
 case "$1" in
     build) build_all ;;
     re) build_code_only ;;
     clean) clean_build ;;
-    *) 
-        echo "Usage: $0 {build|re|clean}"
+    test) run_tests ;;
+    *)
+        echo "Usage: $0 {build|re|clean|test}"
         exit 1
     ;;
 esac
