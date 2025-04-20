@@ -6,6 +6,7 @@
 typedef int pid_t;
 #endif
 
+#include <cstdint>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -17,7 +18,8 @@ It provides methods for attaching to a process, detaching from it, and stepping 
 The interface is implementing the RAII pattern, which means that it will automatically manage the call to detach() when the last copy of the object is destroyed.
 This includes detaching from the process when the object is destroyed.
 */
-class ILowLevelDebugger {
+class ILowLevelDebugger
+{
   public:
     // Context information about the process being debugged.
     // This could include registers, memory state, or other relevant information.
@@ -31,6 +33,16 @@ class ILowLevelDebugger {
 
     struct ProcessInfo {
       public:
+        ProcessInfo clone() const
+        {
+            ProcessInfo copy;
+            copy.pid = pid;
+            copy.instructionCount = Counter(instructionCount);
+            copy.isRunning = isRunning;
+            copy.exitCode = exitCode;
+            return copy;
+        }
+
         // Process ID of the target process
         pid_t pid;
 
@@ -40,6 +52,7 @@ class ILowLevelDebugger {
         struct Counter {
             unsigned int _value;
             Counter() : _value(0) {}
+            Counter(unsigned int value) : _value(value) {}
             Counter &operator++();
             Counter operator++(int);
             void increment();
@@ -81,7 +94,8 @@ class ILowLevelDebugger {
     };
 
     // StepResult subclasses to represent success case
-    struct StepSuccess : StepResult {};
+    struct StepSuccess : StepResult {
+    };
 
     // StepResult subclasses to represent failure case
     struct StepFailure : StepResult {
@@ -106,7 +120,7 @@ class ILowLevelDebugger {
     This allows for flexibility in stepping through the process, such as stepping over multiple instructions or functions if needed.
     @return A StepResult object containing information about the step operation.
     */
-    virtual StepResult step(unsigned int stepSize = 1) = 0;
+    virtual StepResult step(unsigned int stepSize = 1) noexcept = 0;
 
     /*
     Method to attach to a process for debugging.
