@@ -3,25 +3,40 @@
 BUILD_DIR="build"
 EXECUTABLE="SimpleDebog"
 TEST_EXECUTABLE="SimpleDebogTests"
+DEP_INSTALL_DIR="install"
+
+install() {
+    cd "$BUILD_DIR" || { echo "No build directory found. Run './build.sh build' first."; exit 1; }
+    cmake --install . --prefix "../$DEP_INSTALL_DIR" --config Debug
+    cd ..
+}
 
 build_all() {
     rm -rf "$BUILD_DIR" && mkdir "$BUILD_DIR" && touch "$BUILD_DIR/.gitkeep" && cd "$BUILD_DIR"
     cmake .. -DCMAKE_BUILD_TYPE=Debug
-    cmake --build .
-    mv "$EXECUTABLE" ../"$EXECUTABLE"
+    cmake --build . --config Debug
+    cmake --install . --prefix "../$DEP_INSTALL_DIR" --config Debug
+    mv "$EXECUTABLE" "../$EXECUTABLE"
     cd ..
+    mv "$DEP_INSTALL_DIR/bin/"* .
 }
 
 build_code_only() {
     cd "$BUILD_DIR" || { echo "No build directory found. Run './build.sh build' first."; exit 1; }
-    cmake --build .
-    mv "$EXECUTABLE" ../"$EXECUTABLE"
+    cmake --build . --config Debug
+    mv "$EXECUTABLE" "../$EXECUTABLE"
     cd ..
 }
 
 clean_build() {
     rm -rf "$BUILD_DIR"
     mkdir "$BUILD_DIR" && touch "$BUILD_DIR/.gitkeep"
+}
+
+fclean() {
+    rm -rf "$DEP_INSTALL_DIR"
+    rm -f "$EXECUTABLE"
+    clean_build
 }
 
 run_tests() {
@@ -37,9 +52,11 @@ case "$1" in
     build) build_all ;;
     re) build_code_only ;;
     clean) clean_build ;;
+    fclean) fclean ;;
+    install) install ;;
     test) run_tests ;;
     *)
-        echo "Usage: $0 {build|re|clean|test}"
+        echo "Usage: $0 {build|re|clean|fclean|install|test}"
         exit 1
     ;;
 esac
