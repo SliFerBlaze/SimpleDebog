@@ -2,6 +2,7 @@
 
 BUILD_DIR="build"
 EXECUTABLE="SimpleDebog"
+TEST_EXECUTABLE="SimpleDebogTests"
 DEP_INSTALL_DIR="install"
 
 install() {
@@ -17,7 +18,7 @@ build_all() {
     cmake --install . --prefix "../$DEP_INSTALL_DIR" --config Debug
     mv "$EXECUTABLE" "../$EXECUTABLE"
     cd ..
-    mv "$DEP_INSTALL_DIR/bin/*" .
+    mv "$DEP_INSTALL_DIR/bin/"* .
 }
 
 build_code_only() {
@@ -38,14 +39,24 @@ fclean() {
     clean_build
 }
 
+run_tests() {
+    cd "$BUILD_DIR" || { echo "No build directory found. Run './build.sh build' first."; exit 1; }
+    ctest --output-on-failure || {
+        echo "Tests failed 💥"
+        exit 1
+    }
+    cd ..
+}
+
 case "$1" in
     build) build_all ;;
     re) build_code_only ;;
     clean) clean_build ;;
     fclean) fclean ;;
     install) install ;;
+    test) run_tests ;;
     *)
-        echo "Usage: $0 {build|re|clean|fclean|install}"
+        echo "Usage: $0 {build|re|clean|fclean|install|test}"
         exit 1
     ;;
 esac
