@@ -10,13 +10,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(FetchContent)
 
 # Enable Qt features (optional if using .ui or .qrc files)
-# set(CMAKE_AUTOMOC ON)
-# set(CMAKE_AUTOUIC ON)
-# set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 # Find Qt6
 # If you uncomment above, you’ll also need this
-# find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 # Fetch external logger
 FetchContent_Declare(
@@ -94,6 +94,8 @@ target_compile_options(SimpleDebog PRIVATE ${PROJECT_WARNING_FLAGS})
 
 # Link Qt6 and Logger
 target_link_libraries(SimpleDebog PRIVATE Qt6::Widgets Logger)
+install(TARGETS SimpleDebog DESTINATION bin)
+
 
 # ========== Testing Setup ==========
 
@@ -126,5 +128,7 @@ target_link_libraries(SimpleDebogTests
     gmock
     gtest_main
 )
+
+install(TARGETS SimpleDebogTests DESTINATION bin)
 
 add_test(NAME AllUnitTests COMMAND SimpleDebogTests)
