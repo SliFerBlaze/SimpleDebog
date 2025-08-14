@@ -102,6 +102,9 @@ install(TARGETS SimpleDebog DESTINATION bin)
 enable_testing()
 include(FetchContent)
 
+option(ENABLE_COVERAGE "Enable code coverage reporting" OFF)
+
+# GoogleTest Setup
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
@@ -112,6 +115,7 @@ FetchContent_MakeAvailable(googletest)
 # Test Sources
 file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
 
+# Define Test Executable
 add_executable(SimpleDebogTests
     ${TEST_SOURCES}
     ${BACKEND_CORE}
@@ -119,9 +123,13 @@ add_executable(SimpleDebogTests
     # ${SHARED_UTILS}
 )
 
+# Include Directories
 target_include_directories(SimpleDebogTests PRIVATE src/ tests/)
+
+# Warnings and Project Flags
 target_compile_options(SimpleDebogTests PRIVATE ${PROJECT_WARNING_FLAGS})
 
+# Link with GoogleTest
 target_link_libraries(SimpleDebogTests
     PRIVATE
     gtest
@@ -129,6 +137,14 @@ target_link_libraries(SimpleDebogTests
     gtest_main
 )
 
+# Enable Coverage if Requested
+if(ENABLE_COVERAGE)
+    message(STATUS "Code coverage instrumentation enabled")
+    target_compile_options(SimpleDebogTests PRIVATE -O0 -g --coverage)
+    target_link_libraries(SimpleDebogTests PRIVATE --coverage)
+endif()
+
+# Install + Test Registration
 install(TARGETS SimpleDebogTests DESTINATION bin)
 
 add_test(NAME AllUnitTests COMMAND SimpleDebogTests)
