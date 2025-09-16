@@ -120,3 +120,13 @@ bool PtraceWrapper::writeMemory(std::uintptr_t addr, const std::vector<std::uint
     }
     return true;
 }
+
+bool PtraceWrapper::isAddressValid(std::uintptr_t addr) const noexcept
+{
+    errno = 0;
+    long data = ptrace(PTRACE_PEEKDATA, _process_info.pid, addr, nullptr);
+    if (data == -1 && errno != 0) {
+        return false;
+    }
+    return true;
+}

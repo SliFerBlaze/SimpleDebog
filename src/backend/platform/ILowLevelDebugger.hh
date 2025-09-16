@@ -174,6 +174,19 @@ class ILowLevelDebugger
     template <typename T>
     bool writeMemory(std::uintptr_t addr, const T &data);
 
+    /*
+    Method to check if the debugger is currently attached to a process.
+    @return A boolean indicating whether the debugger is attached to a process.
+    */
+    bool isAttached() const noexcept;
+
+    /*
+    Method to check if a memory address is valid in the context of the target process.
+    @param addr The address to check.
+    @return A boolean indicating whether the address is valid.
+    */
+    virtual bool isAddressValid(std::uintptr_t addr) const noexcept = 0;
+
     ILowLevelDebugger() = default;
     ILowLevelDebugger(ILowLevelDebugger const &other);
     ILowLevelDebugger(ILowLevelDebugger &other);

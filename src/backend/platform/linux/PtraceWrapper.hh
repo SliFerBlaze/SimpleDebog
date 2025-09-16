@@ -15,4 +15,5 @@ class PtraceWrapper : public ILowLevelDebugger
     void detach() override;
     std::vector<std::uint8_t> readMemory(std::uintptr_t addr, size_t size) const override;
     bool writeMemory(std::uintptr_t addr, const std::vector<std::uint8_t> &data) override;
+    bool isAddressValid(std::uintptr_t addr) const noexcept override;
 };

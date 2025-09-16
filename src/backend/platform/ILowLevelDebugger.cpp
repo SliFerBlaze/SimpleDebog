@@ -79,3 +79,8 @@ ILowLevelDebugger::Context ILowLevelDebugger::Context::empty()
 {
     return ILowLevelDebugger::Context{};
 };
+
+bool ILowLevelDebugger::isAttached() const noexcept
+{
+    return _pid > 0 && _processes.find(_pid) != _processes.end();
+};
