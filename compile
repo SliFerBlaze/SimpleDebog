@@ -42,6 +42,9 @@ fclean() {
 run_tests() {
     cd "$BUILD_DIR" || { echo "No build directory found. Run './build.sh build' first."; exit 1; }
 
+    echo "BUILD..."
+    cmake --build . --config Debug
+
     echo "Running tests..."
     ctest --output-on-failure || {
         echo "Tests failed 💥"

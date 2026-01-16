@@ -59,7 +59,12 @@ set(BACKEND_CORE
 )
 
 # backend/platform/
+set(BACKEND_PLATFORM
+    src/backend/platform/ILowLevelDebugger.cpp
+)
+
 set(BACKEND_PLATFORM_LINUX
+    ${BACKEND_PLATFORM}
     src/backend/platform/linux/PtraceWrapper.cpp
 )
 
@@ -83,6 +88,7 @@ set(MAIN_SRC
 add_executable(SimpleDebog
     ${MAIN_SRC}
     ${BACKEND_CORE}
+    ${BACKEND_PLATFORM_LINUX}
     # ${BACKEND_COMMANDS}
     # ${BACKEND_PLATFORM_LINUX}
     # ${FRONTEND}
@@ -119,6 +125,7 @@ file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
 add_executable(SimpleDebogTests
     ${TEST_SOURCES}
     ${BACKEND_CORE}
+    ${BACKEND_PLATFORM_LINUX}
     # ${BACKEND_COMMANDS}
     # ${SHARED_UTILS}
 )

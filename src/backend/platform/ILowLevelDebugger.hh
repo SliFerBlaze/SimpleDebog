@@ -6,6 +6,7 @@
 typedef int pid_t;
 #endif
 
+#include <cstdint>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -17,7 +18,8 @@ It provides methods for attaching to a process, detaching from it, and stepping 
 The interface is implementing the RAII pattern, which means that it will automatically manage the call to detach() when the last copy of the object is destroyed.
 This includes detaching from the process when the object is destroyed.
 */
-class ILowLevelDebugger {
+class ILowLevelDebugger
+{
   public:
     // Context information about the process being debugged.
     // This could include registers, memory state, or other relevant information.
@@ -81,13 +83,14 @@ class ILowLevelDebugger {
     };
 
     // StepResult subclasses to represent success case
-    struct StepSuccess : StepResult {};
+    struct StepSuccess : StepResult {
+    };
 
     // StepResult subclasses to represent failure case
     struct StepFailure : StepResult {
         // Signal that caused the failure (if applicable)
         // Defaults to `0`
-        unsigned int signal = 0;
+        int signal = 0;
 
         // Error code indicating the reason for failure
         // `0` indicates the process exited correctly before reaching the wanted step count
@@ -109,11 +112,15 @@ class ILowLevelDebugger {
     virtual StepResult step(unsigned int stepSize = 1) = 0;
 
     /*
-    Method to attach to a process for debugging.
-    This method should be implemented to perform the actual attachment operation.
-    This should call ILowLevelDebugger::attach(pid) at the start of the method.
-    @param pid The process ID of the target process that is to be attached.
+    Method to resume execution of the process being debugged.
+    This method should be implemented to continue the execution of a previously paused or stopped process.
+    The implementation should handle the low-level details of resuming process execution (e.g. ptrace PTRACE_CONT).
+    @return An integer status code indicating the result of the resume operation.
+    The specific meaning of the return value is implementation-dependent.
     */
+    virtual int resume() = 0;
+
+    // just a wrapper for attach(pid_t pid) from ILowLevelDebugger
     virtual void attach(pid_t pid);
 
     /*
@@ -165,10 +172,11 @@ class ILowLevelDebugger {
     ILowLevelDebugger(ILowLevelDebugger &other);
     virtual ~ILowLevelDebugger();
 
-  private:
+  protected:
     // Process ID of the target process
     pid_t _pid = 0;
 
+  private:
     // Map of process IDs to number of debugger instances using them
     static std::map<pid_t, unsigned int> _processes;
 };
