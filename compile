@@ -2,6 +2,7 @@
 
 BUILD_DIR="build"
 EXECUTABLE="SimpleDebog"
+TEST_EXECUTABLE="SimpleDebogTests"
 DEP_INSTALL_DIR="install"
 
 install() {
@@ -12,12 +13,12 @@ install() {
 
 build_all() {
     rm -rf "$BUILD_DIR" && mkdir "$BUILD_DIR" && touch "$BUILD_DIR/.gitkeep" && cd "$BUILD_DIR"
-    cmake .. -DCMAKE_BUILD_TYPE=Debug
+    cmake .. -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
     cmake --build . --config Debug
     cmake --install . --prefix "../$DEP_INSTALL_DIR" --config Debug
     mv "$EXECUTABLE" "../$EXECUTABLE"
     cd ..
-    mv "$DEP_INSTALL_DIR/bin/*" .
+    mv "$DEP_INSTALL_DIR/bin/"* .
 }
 
 build_code_only() {
@@ -38,14 +39,39 @@ fclean() {
     clean_build
 }
 
+run_tests() {
+    cd "$BUILD_DIR" || { echo "No build directory found. Run './build.sh build' first."; exit 1; }
+
+    echo "BUILD..."
+    cmake --build . --config Debug
+
+    echo "Running tests..."
+    ctest --output-on-failure || {
+        echo "Tests failed 💥"
+        exit 1
+    }
+
+    if command -v gcovr >/dev/null 2>&1; then
+        echo "Generating coverage report..."
+        gcovr -r .. --exclude '.*googletest.*' --html --html-details -o coverage.html
+        echo "Coverage report generated at: $BUILD_DIR/coverage.html"
+    else
+        echo "gcovr not installed. Skipping coverage report."
+    fi
+
+    cd ..
+}
+
+
 case "$1" in
     build) build_all ;;
     re) build_code_only ;;
     clean) clean_build ;;
     fclean) fclean ;;
     install) install ;;
+    test) run_tests ;;
     *)
-        echo "Usage: $0 {build|re|clean|fclean|install}"
+        echo "Usage: $0 {build|re|clean|fclean|install|test}"
         exit 1
     ;;
 esac

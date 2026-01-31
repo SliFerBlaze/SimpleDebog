@@ -9,15 +9,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # CMake Options
 include(FetchContent)
 
-# Enable Qt features
-# set(CMAKE_AUTOMOC ON)
-# set(CMAKE_AUTOUIC ON)
-# set(CMAKE_AUTORCC ON)
+# Enable Qt features (optional if using .ui or .qrc files)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 # Find Qt6
-# find_package(Qt6 REQUIRED COMPONENTS Widgets)
+# If you uncomment above, you’ll also need this
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
-# Find Logger
+# Fetch external logger
 FetchContent_Declare(
     Logger
     GIT_REPOSITORY https://github.com/guigui0246/MyCppLoggerCopy.git
@@ -25,9 +26,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Logger)
 
-# Enable strict compiler flags
+# ========== Compiler Flags ==========
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(
+    set(PROJECT_WARNING_FLAGS
         -Wall -Wextra -Wpedantic -Werror
         -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align
         -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion
@@ -56,10 +58,13 @@ set(BACKEND_CORE
     src/backend/core/DebuggerEngine.cpp
 )
 
-# backend/events/
-
 # backend/platform/
+set(BACKEND_PLATFORM
+    src/backend/platform/ILowLevelDebugger.cpp
+)
+
 set(BACKEND_PLATFORM_LINUX
+    ${BACKEND_PLATFORM}
     src/backend/platform/linux/PtraceWrapper.cpp
 )
 
@@ -82,25 +87,71 @@ set(MAIN_SRC
 
 add_executable(SimpleDebog
     ${MAIN_SRC}
+    ${BACKEND_CORE}
+    ${BACKEND_PLATFORM_LINUX}
     # ${BACKEND_COMMANDS}
-    # ${BACKEND_CORE}
     # ${BACKEND_PLATFORM_LINUX}
     # ${FRONTEND}
     # ${SHARED_UTILS}
 )
 
-# Include full source tree for includes
 target_include_directories(SimpleDebog PRIVATE src/)
+target_compile_options(SimpleDebog PRIVATE ${PROJECT_WARNING_FLAGS})
 
-# Link Qt
-# target_link_libraries(SimpleDebog PRIVATE Qt6::Widgets)
+# Link Qt6 and Logger
+target_link_libraries(SimpleDebog PRIVATE Qt6::Widgets Logger)
+install(TARGETS SimpleDebog DESTINATION bin)
 
-# Link Logger
-target_link_libraries(SimpleDebog PRIVATE Logger)
-# get_target_property(LOGGER_DLL_PATH Logger LIBRARY_OUTPUT_DIRECTORY)
-# message(STATUS "Logger DLL Path: ${LOGGER_DLL_PATH}")
-# message(STATUS "Logger DLL Path: $<BUILD_INTERFACE:${LOGGER_DLL_PATH}>")
-# set_target_properties(SimpleDebog PROPERTIES
-#     INSTALL_RPATH "$<BUILD_INTERFACE:${LOGGER_DLL_PATH}>"
-#     BUILD_RPATH "$<BUILD_INTERFACE:${LOGGER_DLL_PATH}>"
-# )
+
+# ========== Testing Setup ==========
+
+enable_testing()
+include(FetchContent)
+
+option(ENABLE_COVERAGE "Enable code coverage reporting" OFF)
+
+# GoogleTest Setup
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.14.0
+)
+FetchContent_MakeAvailable(googletest)
+
+# Test Sources
+file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+
+# Define Test Executable
+add_executable(SimpleDebogTests
+    ${TEST_SOURCES}
+    ${BACKEND_CORE}
+    ${BACKEND_PLATFORM_LINUX}
+    # ${BACKEND_COMMANDS}
+    # ${SHARED_UTILS}
+)
+
+# Include Directories
+target_include_directories(SimpleDebogTests PRIVATE src/ tests/)
+
+# Warnings and Project Flags
+target_compile_options(SimpleDebogTests PRIVATE ${PROJECT_WARNING_FLAGS})
+
+# Link with GoogleTest
+target_link_libraries(SimpleDebogTests
+    PRIVATE
+    gtest
+    gmock
+    gtest_main
+)
+
+# Enable Coverage if Requested
+if(ENABLE_COVERAGE)
+    message(STATUS "Code coverage instrumentation enabled")
+    target_compile_options(SimpleDebogTests PRIVATE -O0 -g --coverage)
+    target_link_libraries(SimpleDebogTests PRIVATE --coverage)
+endif()
+
+# Install + Test Registration
+install(TARGETS SimpleDebogTests DESTINATION bin)
+
+add_test(NAME AllUnitTests COMMAND SimpleDebogTests)

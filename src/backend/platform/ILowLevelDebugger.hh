@@ -101,7 +101,7 @@ class ILowLevelDebugger
     struct StepFailure : StepResult {
         // Signal that caused the failure (if applicable)
         // Defaults to `0`
-        unsigned int signal = 0;
+        int signal = 0;
 
         // Error code indicating the reason for failure
         // `0` indicates the process exited correctly before reaching the wanted step count
@@ -121,6 +121,15 @@ class ILowLevelDebugger
     @return A StepResult object containing information about the step operation.
     */
     virtual StepResult step(unsigned int stepSize = 1) noexcept = 0;
+
+    /*
+    Method to resume execution of the process being debugged.
+    This method should be implemented to continue the execution of a previously paused or stopped process.
+    The implementation should handle the low-level details of resuming process execution (e.g. ptrace PTRACE_CONT).
+    @return An integer status code indicating the result of the resume operation.
+    The specific meaning of the return value is implementation-dependent.
+    */
+    virtual int resume() = 0;
 
     /*
     Method to attach to a process for debugging.
@@ -192,10 +201,11 @@ class ILowLevelDebugger
     ILowLevelDebugger(ILowLevelDebugger &other);
     virtual ~ILowLevelDebugger();
 
-  private:
+  protected:
     // Process ID of the target process
     pid_t _pid = 0;
 
+  private:
     // Map of process IDs to number of debugger instances using them
     static std::map<pid_t, unsigned int> _processes;
 };

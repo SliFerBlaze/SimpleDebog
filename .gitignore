@@ -3,6 +3,8 @@ install/*
 *.o
 *.a
 SimpleDebog
+SimpleDebogTests
 .vscode
+.cache
 
 !build/.gitkeep
