@@ -66,7 +66,8 @@ TEST(PtraceWrapperTest, ContinueProcess)
         int *pipefdlocal = reinterpret_cast<int *>(arg);
 
         close(pipefdlocal[0]);
-        write(pipefdlocal[1], "1234", 5);
+        ssize_t written = write(pipefdlocal[1], "1234", 5);
+        EXPECT_EQ(written, 5);
         close(pipefdlocal[1]);
     },
                                    reinterpret_cast<void *>(pipefd));

@@ -120,7 +120,12 @@ class ILowLevelDebugger
     */
     virtual int resume() = 0;
 
-    // just a wrapper for attach(pid_t pid) from ILowLevelDebugger
+    /*
+    Method to attach to a process for debugging.
+    This method should be implemented to perform the actual attachment operation.
+    This should call ILowLevelDebugger::attach(pid) at the start of the method.
+    @param pid The process ID of the target process that is to be attached.
+    */
     virtual void attach(pid_t pid);
 
     /*
