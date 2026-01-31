@@ -1,13 +1,16 @@
 #include "PtraceWrapper.hh"
 #include <signal.h>
 #include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/user.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <wait.h>
 
 PtraceWrapper::PtraceWrapper() {}
 PtraceWrapper::~PtraceWrapper() {}
 
-ILowLevelDebugger::StepResult PtraceWrapper::step(unsigned int stepSize)
+ILowLevelDebugger::StepResult PtraceWrapper::step(unsigned int stepSize) noexcept
 {
     StepResult result{};
     result.success = true;
@@ -186,15 +189,32 @@ int PtraceWrapper::resume()
 
 std::vector<std::uint8_t> PtraceWrapper::readMemory(std::uintptr_t addr, size_t size) const
 {
-    (void)addr;
-    (void)size;
-    throw std::runtime_error("PtraceWrapper::readMemory not implemented");
+    std::vector<std::uint8_t> data(size);
+    for (size_t i = 0; i < size; ++i) {
+        data[i] = static_cast<std::uint8_t>(ptrace(PTRACE_PEEKDATA, _pid, addr + i, nullptr));
+        if (errno) {
+            throw std::runtime_error("Failed to read memory at address " + std::to_string(addr + i));
+        }
+    }
+    return data;
 }
 
 bool PtraceWrapper::writeMemory(std::uintptr_t addr, const std::vector<std::uint8_t> &data)
 {
+    for (size_t i = 0; i < data.size(); ++i) {
+        if (ptrace(PTRACE_POKEDATA, _pid, addr + i, data[i]) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
 
-    (void)addr;
-    (void)data;
-    throw std::runtime_error("PtraceWrapper::writeMemory not implemented");
+bool PtraceWrapper::isAddressValid(std::uintptr_t addr) const noexcept
+{
+    errno = 0;
+    long data = ptrace(PTRACE_PEEKDATA, _pid, addr, nullptr);
+    if (data == -1 && errno != 0) {
+        return false;
+    }
+    return true;
 }

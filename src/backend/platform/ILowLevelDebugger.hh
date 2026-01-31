@@ -33,6 +33,16 @@ class ILowLevelDebugger
 
     struct ProcessInfo {
       public:
+        ProcessInfo clone() const
+        {
+            ProcessInfo copy;
+            copy.pid = pid;
+            copy.instructionCount = Counter(instructionCount);
+            copy.isRunning = isRunning;
+            copy.exitCode = exitCode;
+            return copy;
+        }
+
         // Process ID of the target process
         pid_t pid;
 
@@ -42,6 +52,7 @@ class ILowLevelDebugger
         struct Counter {
             unsigned int _value;
             Counter() : _value(0) {}
+            Counter(unsigned int value) : _value(value) {}
             Counter &operator++();
             Counter operator++(int);
             void increment();
@@ -109,7 +120,7 @@ class ILowLevelDebugger
     This allows for flexibility in stepping through the process, such as stepping over multiple instructions or functions if needed.
     @return A StepResult object containing information about the step operation.
     */
-    virtual StepResult step(unsigned int stepSize = 1) = 0;
+    virtual StepResult step(unsigned int stepSize = 1) noexcept = 0;
 
     /*
     Method to resume execution of the process being debugged.
@@ -171,6 +182,19 @@ class ILowLevelDebugger
     */
     template <typename T>
     bool writeMemory(std::uintptr_t addr, const T &data);
+
+    /*
+    Method to check if the debugger is currently attached to a process.
+    @return A boolean indicating whether the debugger is attached to a process.
+    */
+    bool isAttached() const noexcept;
+
+    /*
+    Method to check if a memory address is valid in the context of the target process.
+    @param addr The address to check.
+    @return A boolean indicating whether the address is valid.
+    */
+    virtual bool isAddressValid(std::uintptr_t addr) const noexcept = 0;
 
     ILowLevelDebugger() = default;
     ILowLevelDebugger(ILowLevelDebugger const &other);
