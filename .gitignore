@@ -5,5 +5,6 @@ install/*
 SimpleDebog
 SimpleDebogTests
 .vscode
+.cache
 
 !build/.gitkeep

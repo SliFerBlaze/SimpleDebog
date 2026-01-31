@@ -9,13 +9,17 @@
 int main(int ac, char **av)
 {
     Logger::parse_args(ac, av);
-    debug("Launching the program with " + std::to_string(ac) + " arguments.");
-    for (int i = 0; i < ac; ++i) {
-        debug("Argument " + std::to_string(i) + ": " + av[i]);
+
+    // string vector from av
+    std::vector<std::string> args(av + 1, av + ac);
+
+    debug("Launching the program with " + std::to_string(args.size()) + " arguments.");
+    for (size_t i = 0; i < args.size(); ++i) {
+        debug("Argument " + std::to_string(i) + ": " + args[i]);
     }
     PtraceWrapper ptraceWrapper;
 
-    ptraceWrapper.attach(av[1], av + 2);
+    ptraceWrapper.attach(args[0], args);
 
     debug("Program attached");
     debug("Resuming program");
