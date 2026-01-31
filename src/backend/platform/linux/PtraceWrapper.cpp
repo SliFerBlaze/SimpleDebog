@@ -151,7 +151,7 @@ void PtraceWrapper::detach()
         return;
     }
 
-    kill(_pid, SIGSTOP);
+    kill(_pid, SIGKILL);
     waitpid(_pid, nullptr, 0);
 
     ptrace(PTRACE_DETACH, _pid, nullptr, nullptr);
