@@ -10,7 +10,7 @@
 PtraceWrapper::PtraceWrapper() {}
 PtraceWrapper::~PtraceWrapper() {}
 
-ILowLevelDebugger::StepResult PtraceWrapper::step(unsigned int stepSize)
+ILowLevelDebugger::StepResult PtraceWrapper::step(unsigned int stepSize) noexcept
 {
     StepResult result{};
     result.success = true;
@@ -191,7 +191,7 @@ std::vector<std::uint8_t> PtraceWrapper::readMemory(std::uintptr_t addr, size_t 
 {
     std::vector<std::uint8_t> data(size);
     for (size_t i = 0; i < size; ++i) {
-        data[i] = ptrace(PTRACE_PEEKDATA, _process_info.pid, addr + i, nullptr);
+        data[i] = static_cast<std::uint8_t>(ptrace(PTRACE_PEEKDATA, _pid, addr + i, nullptr));
         if (errno) {
             throw std::runtime_error("Failed to read memory at address " + std::to_string(addr + i));
         }
@@ -202,7 +202,7 @@ std::vector<std::uint8_t> PtraceWrapper::readMemory(std::uintptr_t addr, size_t 
 bool PtraceWrapper::writeMemory(std::uintptr_t addr, const std::vector<std::uint8_t> &data)
 {
     for (size_t i = 0; i < data.size(); ++i) {
-        if (ptrace(PTRACE_POKEDATA, _process_info.pid, addr + i, data[i]) != 0) {
+        if (ptrace(PTRACE_POKEDATA, _pid, addr + i, data[i]) != 0) {
             return false;
         }
     }
@@ -212,7 +212,7 @@ bool PtraceWrapper::writeMemory(std::uintptr_t addr, const std::vector<std::uint
 bool PtraceWrapper::isAddressValid(std::uintptr_t addr) const noexcept
 {
     errno = 0;
-    long data = ptrace(PTRACE_PEEKDATA, _process_info.pid, addr, nullptr);
+    long data = ptrace(PTRACE_PEEKDATA, _pid, addr, nullptr);
     if (data == -1 && errno != 0) {
         return false;
     }

@@ -5,9 +5,6 @@
 
 class PtraceWrapper : public ILowLevelDebugger
 {
-  private:
-    ProcessInfo _process_info;
-
   public:
     PtraceWrapper();
     ~PtraceWrapper();
