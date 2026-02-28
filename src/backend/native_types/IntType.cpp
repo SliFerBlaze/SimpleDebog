@@ -1,6 +1,5 @@
-#include "../../interface/NativeTypes.hh"
 #include "./IntType.hh"
-#include "./StdTypes.hh"
+#include "../../interface/NativeTypes.hh"
 
 void registerNativeTypes()
 {
