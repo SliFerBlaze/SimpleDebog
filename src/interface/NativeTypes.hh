@@ -88,9 +88,25 @@ class INativeTypeValue
 class NativeTypeRegistry
 {
   public:
-    static void registerType(const std::string &name, std::shared_ptr<INativeType> type)
+    static void registerType(
+        const std::string &name,
+        std::shared_ptr<INativeType> type,
+        bool overwrite = false)
     {
+        if (!overwrite && hasType(name)) {
+            throw std::runtime_error("Native type already registered: " + name);
+        }
         nativeTypeRegistry[name] = type;
+    }
+
+    static void unregisterType(const std::string &name)
+    {
+        nativeTypeRegistry.erase(name);
+    }
+
+    static bool hasType(const std::string &name)
+    {
+        return nativeTypeRegistry.find(name) != nativeTypeRegistry.end();
     }
 
     static std::shared_ptr<INativeType> getType(const std::string &name)
