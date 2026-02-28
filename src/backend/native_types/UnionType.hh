@@ -14,9 +14,8 @@ class UnionType : public INativeType
     };
 
     UnionType(const std::string &name, const std::vector<Member> &members)
-        : _name(name), _members(members)
+        : _name(name), _members(members), _size(calculateSize())
     {
-        _size = calculateSize();
     }
 
     std::string getTypeName() const override { return _name; }
@@ -30,9 +29,10 @@ class UnionType : public INativeType
     const std::vector<Member> &getMembers() const { return _members; }
 
   private:
-    std::string _name;
-    std::vector<Member> _members;
-    std::size_t _size;
+    // Original name of the union, not necessarily unique
+    const std::string _name;
+    const std::vector<Member> _members;
+    const std::size_t _size;
 
     std::size_t calculateSize() const
     {

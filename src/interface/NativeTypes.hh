@@ -1,5 +1,7 @@
 #pragma once
 #include <cstddef>
+#include <map>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -81,4 +83,25 @@ class INativeTypeValue
 
     // Returns the value as a string
     virtual std::string toString() const = 0;
+};
+
+class NativeTypeRegistry
+{
+  public:
+    static void registerType(const std::string &name, std::shared_ptr<INativeType> type)
+    {
+        nativeTypeRegistry[name] = type;
+    }
+
+    static std::shared_ptr<INativeType> getType(const std::string &name)
+    {
+        auto it = nativeTypeRegistry.find(name);
+        if (it != nativeTypeRegistry.end()) {
+            return it->second;
+        }
+        throw std::runtime_error("Native type not found: " + name);
+    }
+
+  private:
+    static std::map<std::string, std::shared_ptr<INativeType>> nativeTypeRegistry;
 };

@@ -5,7 +5,8 @@
 class IntType : public INativeType
 {
   public:
-    IntType(bool isSigned, std::size_t size) : _isSigned(isSigned), _size(size) {}
+    IntType(bool isSigned, std::size_t size)
+        : _isSigned(isSigned), _size(size) {}
 
     std::string getTypeName() const override
     {
@@ -20,7 +21,8 @@ class IntType : public INativeType
             case 8:
                 return "int64_t";
             default:
-                throw std::runtime_error("Unsupported size for signed int type");
+                throw std::runtime_error(
+                    "Unsupported size for signed int type");
             }
         }
         else {
@@ -34,7 +36,8 @@ class IntType : public INativeType
             case 8:
                 return "uint64_t";
             default:
-                throw std::runtime_error("Unsupported size for unsigned int type");
+                throw std::runtime_error(
+                    "Unsupported size for unsigned int type");
             }
         }
     }
@@ -50,8 +53,8 @@ class IntType : public INativeType
     bool isStd() const override { return true; }
 
   private:
-    bool _isSigned;
-    std::size_t _size;
+    const bool _isSigned;
+    const std::size_t _size;
 };
 
 class Int8Type : public IntType
