@@ -2,6 +2,7 @@
 #include <iostream>
 
 FakeCommand::FakeCommand(DebuggerEngine *engine)
+    : ACommand(ICommandType::Fake, nullptr)
 {
     if (engine) {
         _engine = engine;

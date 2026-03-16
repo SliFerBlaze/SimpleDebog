@@ -9,8 +9,10 @@ DebuggerEngine::~DebuggerEngine()
 
 void DebuggerEngine::executeCommand(std::unique_ptr<ICommand> cmd)
 {
-    if (cmd) {
-        _commands.push(std::move(cmd));
+    if (ACommand *raw = dynamic_cast<ACommand *>(cmd.get())) {
+        cmd.release(); // release ownership
+        std::unique_ptr<ACommand> derived(raw);
+        _commands.push(std::move(derived));
     }
     else {
         throw std::invalid_argument("Command cannot be null");
@@ -39,7 +41,7 @@ void DebuggerEngine::emitEvent(std::unique_ptr<DebugEvent> event)
     }
 }
 
-std::unique_ptr<ICommand> DebuggerEngine::popCommand(void)
+std::unique_ptr<ACommand> DebuggerEngine::popCommand(void)
 {
     if (_commands.empty()) {
         return nullptr;

@@ -3,7 +3,10 @@
 #include <string>
 
 enum class DebugEventType {
-    Fake,
+    Fake, // For testing purposes
+    BreakpointHit,
+    LeakDetected,
+    ExceptionThrown,
 };
 
 struct DebugEvent {

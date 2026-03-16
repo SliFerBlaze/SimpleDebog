@@ -1,7 +1,7 @@
-#include "backend/commands/ICommand.hh"
+#include "backend/commands/ACommand.hh"
 #include "backend/core/DebuggerEngine.hh"
 
-class FakeCommand : public ICommand
+class FakeCommand : public ACommand
 {
 
   private:

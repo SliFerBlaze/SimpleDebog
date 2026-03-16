@@ -1,6 +1,6 @@
 
 #include "backend/core/DebuggerEngine.hh"
-#include "backend/events/DebugEvent.hh"
+#include "interface/DebugEvent.hh"
 #include "interface/DebugEventListener.hh"
 #include "interface/IDebugger.hh"
 #include "mocks/FakeCommand.hh"
