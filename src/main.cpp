@@ -1,10 +1,12 @@
+#include "backend/core/main.hh"
+#include "backend/core/DebuggerEngine.hh"
+#include "backend/platform/linux/PtraceWrapper.hh"
 #include <Logger.hpp>
 #include <iostream>
 #include <string>
-#include <vector>
-
-#include "backend/platform/linux/PtraceWrapper.hh"
+#include <thread>
 #include <unistd.h>
+#include <vector>
 
 int main(int ac, char **av)
 {
@@ -20,15 +22,24 @@ int main(int ac, char **av)
     PtraceWrapper ptraceWrapper;
 
     ptraceWrapper.attach(args[0], args);
-
     debug("Program attached");
-    debug("Resuming program");
-    ptraceWrapper.resume();
 
+    DebuggerEngine debugger;
+    bool running = true;
+
+    std::thread backendThread(
+        main_backend_core,
+        std::ref(debugger),
+        std::ref(ptraceWrapper),
+        std::ref(running));
+
+    //    MainWindow mainWindow;
+    //    mainWindow.loop(std::move(command), std::move(debugger));
+
+    running = false;
+    backendThread.join();
     debug("Detaching from program");
-
     ptraceWrapper.detach();
-
     debug("Program detached");
     return 0;
 }

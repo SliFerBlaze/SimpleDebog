@@ -56,6 +56,7 @@ set(BACKEND_COMMANDS
 # backend/core/
 set(BACKEND_CORE
     src/backend/core/DebuggerEngine.cpp
+    src/backend/core/main.cpp
 )
 
 # backend/platform/
@@ -90,7 +91,6 @@ add_executable(SimpleDebog
     ${BACKEND_CORE}
     ${BACKEND_PLATFORM_LINUX}
     # ${BACKEND_COMMANDS}
-    # ${BACKEND_PLATFORM_LINUX}
     # ${FRONTEND}
     # ${SHARED_UTILS}
 )
