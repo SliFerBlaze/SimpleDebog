@@ -1,7 +1,7 @@
 #pragma once
 
-#include "backend/commands/ICommand.hh"
 #include "interface/DebugEventListener.hh"
+#include "interface/ICommand.hh"
 #include <memory>
 
 class IDebugger

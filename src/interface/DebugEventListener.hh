@@ -1,5 +1,7 @@
 #pragma once
 
+#include "interface/DebugEvent.hh"
+
 class DebugEventListener
 {
   public:
